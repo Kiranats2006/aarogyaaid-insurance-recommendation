@@ -2,24 +2,42 @@ const express = require("express");
 const router = express.Router();
 
 const { rankPolicies } = require("../services/rankingEngine");
+const { generatePolicyExplanation } = require("../agents/explainPolicy");
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
 
     const userProfile = req.body;
 
     const rankedPolicies = rankPolicies(userProfile);
 
     if (rankedPolicies.length === 0) {
-
         return res.json({
             message: "No suitable policies found"
         });
-
     }
 
     const bestPolicy = rankedPolicies[0];
 
-    const response = {
+    let explanation =
+        `${bestPolicy.policyName} is recommended based on your profile.`;
+
+    try {
+
+        explanation =
+            await generatePolicyExplanation(
+                userProfile,
+                bestPolicy
+            );
+
+    } catch (error) {
+
+        console.log(
+            "ADK explanation fallback used."
+        );
+
+    }
+
+    res.json({
 
         peerComparison: rankedPolicies,
 
@@ -31,12 +49,9 @@ router.post("/", (req, res) => {
             claimType: bestPolicy.claimType
         },
 
-        whyThisPolicy:
-            `${bestPolicy.policyName} is recommended because it matches your condition, has a suitable waiting period, and fits your city network needs.`
+        whyThisPolicy: explanation
 
-    };
-
-    res.json(response);
+    });
 
 });
 

@@ -1,34 +1,32 @@
 const { loadPolicies } = require("../services/rankingEngine");
 
-function retrievePolicyChunks(query) {
+async function retrievePolicyChunks(input) {
+
+    const query = input.query.toLowerCase();
 
     const policies = loadPolicies();
 
-    const matches = [];
+    const results = [];
 
     for (let i = 0; i < policies.length; i++) {
 
         const policy = policies[i];
 
-        if (
-            query.toLowerCase().includes("waiting period")
-        ) {
+        if (query.includes("waiting period")) {
 
-            matches.push({
+            results.push({
                 policy: policy.policyName,
-                source: "waitingPeriodMonths",
+                clause: "waitingPeriodMonths",
                 value: policy.waitingPeriodMonths
             });
 
         }
 
-        if (
-            query.toLowerCase().includes("co-pay")
-        ) {
+        if (query.includes("co-pay")) {
 
-            matches.push({
+            results.push({
                 policy: policy.policyName,
-                source: "copayPercent",
+                clause: "copayPercent",
                 value: policy.copayPercent
             });
 
@@ -36,7 +34,7 @@ function retrievePolicyChunks(query) {
 
     }
 
-    return matches;
+    return results;
 }
 
 module.exports = {
