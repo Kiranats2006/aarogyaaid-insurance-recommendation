@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { rankPolicies } = require("../services/rankingEngine");
 const { generatePolicyExplanation } = require("../agents/explainPolicy");
+const Profile = require("../models/Profile");
 
 router.post("/", async (req, res) => {
 
@@ -17,6 +18,16 @@ router.post("/", async (req, res) => {
     }
 
     const bestPolicy = rankedPolicies[0];
+
+    Profile.create({
+        fullName: userProfile.fullName,
+        age: userProfile.age,
+        lifestyle: userProfile.lifestyle,
+        condition: userProfile.condition,
+        income: userProfile.income,
+        city: userProfile.city,
+        recommendedPolicy: bestPolicy.policyName
+    });
 
     let explanation =
         `${bestPolicy.policyName} is recommended based on your profile.`;

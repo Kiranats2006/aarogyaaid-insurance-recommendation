@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use("/recommend", recommendRoute);
 app.use("/chat", chatRoute);
 
 app.use("/admin", adminRoute);
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {console.log("Mongo connected");});
 
 
 app.listen(5000, () => {
