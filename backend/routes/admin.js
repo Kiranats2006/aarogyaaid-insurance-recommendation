@@ -6,7 +6,7 @@ const path = require("path");
 const multer = require("multer");
 
 const adminAuth = require("../middleware/adminAuth");
-
+const { parsePdf } = require("../services/pdfParser");  
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -53,6 +53,11 @@ router.get("/documents", adminAuth, (req, res) => {
             insurer = "Manual Text Policy";
         }
 
+        if (fileName.endsWith(".pdf")) {
+            policyName = fileName;
+            insurer = "PDF Policy Document";
+        }
+
         documents.push({
             fileName: fileName,
             uploadDate: stats.birthtime,
@@ -72,10 +77,26 @@ router.post("/upload", adminAuth, upload.single("policyFile"), (req, res) => {
                 message: "No file uploaded"
             });
         }
-        res.json({
-            message: "Policy uploaded successfully",
-            file: req.file.originalname
-        });
+        if (req.file.originalname.endsWith(".pdf")) {
+            parsePdf(req.file.path).then((text) => {
+                res.json({
+                    message:
+                        "PDF uploaded and parsed",
+                    file:
+                        req.file.originalname,
+                    preview:
+                        text.substring(0,200)
+                });
+            });
+        }
+        else {
+            res.json({
+                message:
+                    "Policy uploaded successfully",
+                file:
+                    req.file.originalname
+            });
+        }
     }
 );
 
