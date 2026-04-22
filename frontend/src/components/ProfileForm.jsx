@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 import RecommendationView from "./RecommendationView";
+import ChatPanel from "./ChatPanel";
 
 
 function ProfileForm() {
@@ -237,6 +238,15 @@ function ProfileForm() {
             <RecommendationView
                 recommendation={recommendation}
             />
+            {
+                recommendation && (
+
+                <ChatPanel
+                    userProfile={formData}
+                />
+
+                )
+            }
 
         </div>
     );
