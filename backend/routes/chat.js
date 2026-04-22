@@ -6,43 +6,33 @@ const {
     retrievePolicyChunks
 } = require("../agents/tools");
 
-
 router.post("/", async (req, res) => {
 
     const question = req.body.question;
 
     const userProfile = req.body.userProfile;
 
-
     if (
         question.toLowerCase().includes("waiting period")
     ) {
-
-        const sources =
-        await retrievePolicyChunks({
-            query: "waiting period"
-        });
 
         return res.json({
 
             answer:
             "Waiting period is the time before certain conditions are covered.",
 
-            sources: sources
+            sources:
+            retrievePolicyChunks({
+                query: "waiting period"
+            })
 
         });
 
     }
 
-
     if (
         question.toLowerCase().includes("co-pay")
     ) {
-
-        const sources =
-        await retrievePolicyChunks({
-            query: "co-pay"
-        });
 
         return res.json({
 
@@ -51,12 +41,14 @@ router.post("/", async (req, res) => {
 in ${userProfile.city},
 co-pay means you may pay part of claim costs yourself.`,
 
-            sources: sources
+            sources:
+            retrievePolicyChunks({
+                query: "co-pay"
+            })
 
         });
 
     }
-
 
     if (
         question.toLowerCase().includes("surgery")
@@ -68,7 +60,6 @@ co-pay means you may pay part of claim costs yourself.`,
         });
 
     }
-
 
     return res.json({
         answer:

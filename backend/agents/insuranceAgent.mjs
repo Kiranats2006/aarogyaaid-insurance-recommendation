@@ -1,60 +1,67 @@
 import "dotenv/config";
-import { LlmAgent } from "@google/adk";
+import { LlmAgent, FunctionTool } from "@google/adk";
+
+import vectorStoreModule from "../services/vectorStore.js";
+
+const searchChunks = vectorStoreModule.searchChunks;
 
 
-async function retrieve_policy_chunks(query) {
-    /*
-    Use this function whenever a user asks about:
-    - waiting periods
-    - co-pay
-    - exclusions
-    - coverage
-    */
+const retrievePolicyChunksTool = new FunctionTool({
+    name: "retrieve_policy_chunks",
 
-    const text = query.toLowerCase();
+    description:
+        "Retrieve policy waiting periods and co-pay information from stored policy data.",
 
-    if (text.includes("waiting")) {
+    parameters: {
+        type: "object",
+        properties: {
+            query: {
+                type: "string"
+            }
+        },
+        required: ["query"]
+    },
+
+    execute: async ({ query }) => {
+
+        const results =
+            searchChunks(query);
+
+        if (results.length > 0) {
+
+            return {
+                answer:
+                    results[0].text
+            };
+
+        }
+
         return {
             answer:
-                "Care Secure Plus has a 12 month waiting period."
+                "No matching policy information found."
         };
     }
-
-    if (text.includes("co-pay")) {
-        return {
-            answer:
-                "Care Secure Plus has 10 percent co-pay."
-        };
-    }
-
-    return {
-        answer:
-            "No matching policy information found."
-    };
-}
+});
 
 
 const rootAgent = new LlmAgent({
-
     name: "insurance_advisor",
 
     model: "gemini-2.5-flash",
 
     instruction: `
-When a user asks about waiting periods,
+If user asks about waiting periods,
 co-pay, exclusions, or coverage,
 
-call the function retrieve_policy_chunks.
+ALWAYS call retrieve_policy_chunks.
 
-Do not answer those questions yourself.
-
-Use the function result to answer.
+Use only tool results.
+Do not answer from model knowledge.
 `,
 
     tools: [
-        retrieve_policy_chunks
+        retrievePolicyChunksTool
     ]
-
 });
 
 export default rootAgent;
