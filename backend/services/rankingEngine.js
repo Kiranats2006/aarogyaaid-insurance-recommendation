@@ -2,84 +2,55 @@ const fs = require("fs");
 const path = require("path");
 
 function loadPolicies() {
-
-    const policyFiles = [
-        "care-secure-plus.json",
-        "shield-protect-gold.json",
-        "family-health-basic.json"
-    ];
-
+    const folderPath = path.join(__dirname, "../../policies");
+    const files = fs.readdirSync(folderPath);
     const policies = [];
 
-    for (let i = 0; i < policyFiles.length; i++) {
+    for (let i = 0; i < files.length; i++) {
+        const fileName = files[i];
 
-        const filePath = path.join(
-            __dirname,
-            "../../policies",
-            policyFiles[i]
-        );
+        if (fileName.endsWith(".json")) {
+            const filePath = path.join(folderPath, fileName);
+            const fileData = fs.readFileSync(filePath, "utf-8");
 
-        const fileData = fs.readFileSync(filePath, "utf-8");
-
-        policies.push(JSON.parse(fileData));
+            policies.push(JSON.parse(fileData));
+        }
     }
 
     return policies;
 }
 
-
 function filterEligiblePolicies(userProfile) {
-
-    const policies =
-        loadPolicies();
-
+    const policies = loadPolicies();
     const eligible = [];
 
-
     for (let i = 0; i < policies.length; i++) {
+        let policy = policies[i];
+        let userConditions = userProfile.condition;
 
-        let policy =
-            policies[i];
-
-
-        if (
-            userProfile.condition === "None"
-        ) {
-
-            eligible.push(
-                policy
-            );
-
+        if (!Array.isArray(userConditions)) {
+            userConditions = [userConditions];
         }
 
-
-        else if (
-
-            policy.conditionsCovered.includes(
-                userProfile.condition
-            )
-
-        ) {
-
-            eligible.push(
-                policy
-            );
-
+        if (userConditions.includes("None")) {
+            eligible.push(policy);
+        } else {
+            for (let j = 0; j < userConditions.length; j++) {
+                if (policy.conditionsCovered.includes(userConditions[j])) {
+                    eligible.push(policy);
+                    break;
+                }
+            }
         }
-
     }
 
-
     return eligible;
-
 }
 
 function rankPolicies(userProfile) {
-
     const policies = filterEligiblePolicies(userProfile);
 
     for (let i = 0; i < policies.length; i++) {
-
         let score = 0;
 
         score += 30;
@@ -89,46 +60,45 @@ function rankPolicies(userProfile) {
         }
 
         if (userProfile.income === "under 3L") {
-
             if (policies[i].premium <= 15000) {
                 score += 20;
             }
-
-        }
-
-        else if (userProfile.income === "3-8L") {
+        } else if (userProfile.income === "3-8L") {
             if (policies[i].premium <= 20000) {
                 score += 20;
             }
-        }
-        else {
+        } else {
             score += 15;
         }
 
-
-        if (userProfile.age > 50 && policies[i].waitingPeriodMonths <= 12) {
+        if (
+            userProfile.age > 50 &&
+            policies[i].waitingPeriodMonths <= 12
+        ) {
             score += 15;
         }
-
 
         if (userProfile.lifestyle === "Active") {
             score += 10;
         }
 
-
-        if (policies[i].networkTierSupport.includes(userProfile.city)) {
+        if (
+            policies[i].networkTierSupport.includes(
+                userProfile.city
+            )
+        ) {
             score += 15;
         }
 
-
         policies[i].suitabilityScore = score;
-
     }
-    policies.sort((a, b) => b.suitabilityScore - a.suitabilityScore);
+
+    policies.sort(function(a, b) {
+        return b.suitabilityScore - a.suitabilityScore;
+    });
 
     return policies;
 }
-
 
 module.exports = {
     loadPolicies,

@@ -8,7 +8,7 @@ function AdminGate() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (password === "letmein") {
+        if (password === import.meta.env.VITE_ADMIN_GATE_CODE) {
             setAuthenticated(true);
             setError(false);
         } else {

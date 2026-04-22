@@ -28,7 +28,7 @@ function ChatPanel({ userProfile }) {
                 userProfile: userProfile
             });
 
-            const botMessage = { role: "assistant", text: response.data.answer };
+            const botMessage = { role: "assistant", text: response.data.answer, sources: response.data.sources || [] };
             setMessages(prev => [...prev, botMessage]);
             setQuestion("");
         } catch (error) {
@@ -81,12 +81,23 @@ function ChatPanel({ userProfile }) {
                         >
                             <div
                                 className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                                    msg.role === 'user'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white border border-gray-200 text-gray-800'
+                                    msg.role === "user"
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-white border border-gray-200 text-gray-800"
                                 }`}
                             >
-                                <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                                <p className="text-sm whitespace-pre-wrap">
+                                    {msg.text}
+                                </p>
+                                {
+                                    msg.sources &&
+                                    msg.sources.length > 0 && (
+                                        <p className="mt-2 text-sm">
+                                            <b>Source:</b>{" "}
+                                            {msg.sources.join(", ")}
+                                        </p>
+                                    )
+                                }
                             </div>
                         </div>
                     ))

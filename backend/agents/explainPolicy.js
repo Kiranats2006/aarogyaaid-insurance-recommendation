@@ -11,6 +11,7 @@ function buildFallbackExplanation(
 ) {
 
     return `
+    Given your ${userProfile.condition} profile, finding affordable coverage with manageable waiting periods is important.
 ${bestPolicy.policyName} is recommended for a
 ${userProfile.age}-year-old user with
 ${userProfile.condition}

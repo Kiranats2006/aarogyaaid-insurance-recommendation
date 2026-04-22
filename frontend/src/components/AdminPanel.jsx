@@ -30,7 +30,8 @@ function AdminPanel() {
 
         try {
             await axios.post("http://localhost:5000/admin/upload", formData, {
-                auth: { username: "admin", password: "admin123" }
+                auth: { username: import.meta.env.VITE_ADMIN_USER,
+                        password: import.meta.env.VITE_ADMIN_PASS }
             });
             loadDocuments();
             setFile(null);

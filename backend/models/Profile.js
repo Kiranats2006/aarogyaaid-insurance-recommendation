@@ -4,7 +4,7 @@ const profileSchema = new mongoose.Schema({
     fullName: String,
     age: Number,
     lifestyle: String,
-    condition: String,
+    condition: [String],
     income: String,
     city: String,
     recommendedPolicy: String,
