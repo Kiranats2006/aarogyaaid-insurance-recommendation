@@ -48,6 +48,11 @@ router.get("/documents", adminAuth, (req, res) => {
             insurer = policy.insurer;
         }
 
+        if (fileName.endsWith(".txt")) {
+            policyName = fileName;
+            insurer = "Manual Text Policy";
+        }
+
         documents.push({
             fileName: fileName,
             uploadDate: stats.birthtime,
