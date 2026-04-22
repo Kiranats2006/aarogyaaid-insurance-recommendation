@@ -64,25 +64,43 @@ function rankPolicies(userProfile) {
             score += 20;
         }
 
-        if (policies[i].premium <= 20000) {
-            score += 20;
+        if (userProfile.income === "under 3L") {
+
+            if (policies[i].premium <= 15000) {
+                score += 20;
+            }
+
         }
 
-        if (
-            policies[i].networkTierSupport.includes(
-                userProfile.city
-            )
-        ) {
+        else if (userProfile.income === "3-8L") {
+            if (policies[i].premium <= 20000) {
+                score += 20;
+            }
+        }
+        else {
             score += 15;
         }
 
+
+        if (userProfile.age > 50 && policies[i].waitingPeriodMonths <= 12) {
+            score += 15;
+        }
+
+
+        if (userProfile.lifestyle === "Active") {
+            score += 10;
+        }
+
+
+        if (policies[i].networkTierSupport.includes(userProfile.city)) {
+            score += 15;
+        }
+
+
         policies[i].suitabilityScore = score;
+
     }
-
-    policies.sort(
-        (a, b) => b.suitabilityScore - a.suitabilityScore
-    );
-
+    policies.sort((a, b) => b.suitabilityScore - a.suitabilityScore);
 
     return policies;
 }
