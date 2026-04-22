@@ -115,6 +115,7 @@ ${retrievedContext}
 Answer ONLY using retrieved policy clauses.
 Define terms simply.
 Use a realistic example for this user.
+dont give any medical advice
 `;
 
 
