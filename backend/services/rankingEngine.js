@@ -1,0 +1,95 @@
+const fs = require("fs");
+const path = require("path");
+
+function loadPolicies() {
+
+    const policyFiles = [
+        "care-secure-plus.json",
+        "shield-protect-gold.json",
+        "family-health-basic.json"
+    ];
+
+    const policies = [];
+
+    for (let i = 0; i < policyFiles.length; i++) {
+
+        const filePath = path.join(
+            __dirname,
+            "../../policies",
+            policyFiles[i]
+        );
+
+        const fileData = fs.readFileSync(filePath, "utf-8");
+
+        policies.push(JSON.parse(fileData));
+    }
+
+    return policies;
+}
+
+
+function filterEligiblePolicies(userProfile) {
+
+    const policies = loadPolicies();
+
+    const eligible = [];
+
+    for (let i = 0; i < policies.length; i++) {
+
+        let policy = policies[i];
+
+        if (
+            userProfile.condition === "Diabetes" &&
+            policy.conditionsCovered.includes("Diabetes")
+        ) {
+            eligible.push(policy);
+        }
+
+    }
+
+    return eligible;
+}
+
+function rankPolicies(userProfile) {
+
+    const policies = filterEligiblePolicies(userProfile);
+
+    for (let i = 0; i < policies.length; i++) {
+
+        let score = 0;
+
+        score += 30;
+
+        if (policies[i].waitingPeriodMonths <= 12) {
+            score += 20;
+        }
+
+        if (policies[i].premium <= 20000) {
+            score += 20;
+        }
+
+        if (
+            policies[i].networkTierSupport.includes(
+                userProfile.city
+            )
+        ) {
+            score += 15;
+        }
+
+        policies[i].suitabilityScore = score;
+    }
+
+    policies.sort(
+        (a, b) => b.suitabilityScore - a.suitabilityScore
+    );
+
+
+    return policies;
+}
+
+
+module.exports = {
+    loadPolicies,
+    filterEligiblePolicies,
+    rankPolicies
+};
