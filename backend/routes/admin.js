@@ -127,5 +127,40 @@ router.put("/document/:fileName", adminAuth, (req, res) => {
 
 });
 
+router.delete("/document/:fileName", adminAuth, (req, res) => {
+
+    const fileName = req.params.fileName;
+
+    const filePath =
+        path.join(__dirname, "../../policies", fileName);
+
+
+    if (!fs.existsSync(filePath)) {
+
+        return res.status(404).json({
+            message: "Document not found"
+        });
+
+    }
+
+
+    if (req.query.confirm !== "yes") {
+
+        return res.status(400).json({
+            message: "Add ?confirm=yes to delete"
+        });
+
+    }
+
+
+    fs.unlinkSync(filePath);
+
+
+    res.json({
+        message: "Document deleted successfully"
+    });
+
+});
+
 
 module.exports = router;
