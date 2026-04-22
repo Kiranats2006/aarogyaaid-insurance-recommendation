@@ -24,23 +24,32 @@ const retrievePolicyChunksTool = new FunctionTool({
 
     execute: async ({ query }) => {
 
-        const results =
-            searchChunks(query);
+      const results =
+          searchChunks(query);
 
-        if (results.length > 0) {
+      if (results.length > 0) {
 
-            return {
-                answer:
-                    results[0].text
-            };
+          return {
+              answer:
+                  results[0].text,
 
-        }
+              sources:
+                  results.map(
+                      item =>
+                      item.policy
+                  )
+          };
 
-        return {
-            answer:
-                "No matching policy information found."
-        };
-    }
+      }
+
+      return {
+          answer:
+              "No matching policy information found.",
+
+          sources: []
+      };
+
+  }
 });
 
 
@@ -49,16 +58,15 @@ const rootAgent = new LlmAgent({
 
     model: "gemini-2.5-flash",
 
-    instruction: `
-If user asks about waiting periods,
-co-pay, exclusions, or coverage,
+  instruction: `
+  Always call retrieve_policy_chunks
+  for waiting period, co-pay,
+  coverage or exclusions.
 
-ALWAYS call retrieve_policy_chunks.
+  Use tool results only.
 
-Use only tool results.
-Do not answer from model knowledge.
-`,
-
+  Decline medical advice questions.
+  `,
     tools: [
         retrievePolicyChunksTool
     ]

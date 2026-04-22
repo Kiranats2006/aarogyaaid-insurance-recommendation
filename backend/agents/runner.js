@@ -1,13 +1,15 @@
 const { Runner } = require("@google/adk");
 
-const {
-    insuranceAgent
-} = require("./insuranceAgent.mjs");
+async function getRunner() {
+    const agentModule = await import("./insuranceAgent.mjs");
 
-const runner = new Runner({
-    agent: insuranceAgent
-});
+    const runner = new Runner({
+        agent: agentModule.default
+    });
+
+    return runner;
+}
 
 module.exports = {
-    runner
+    getRunner
 };

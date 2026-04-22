@@ -1,54 +1,41 @@
 const express = require("express");
-
 const router = express.Router();
+
+require("dotenv").config();
+
+const { GoogleGenAI } =
+require("@google/genai");
 
 const {
     retrievePolicyChunks
 } = require("../agents/tools");
 
+const Profile =
+require("../models/Profile");
+
+
 router.post("/", async (req, res) => {
 
-    const question = req.body.question;
+    const question =
+        req.body.question;
 
-    const userProfile = req.body.userProfile;
+    let userProfile =
+        req.body.userProfile;
 
-    if (
-        question.toLowerCase().includes("waiting period")
-    ) {
 
-        return res.json({
+    if (!userProfile) {
 
-            answer:
-            "Waiting period is the time before certain conditions are covered.",
+        const lastProfile =
+            await Profile
+            .findOne()
+            .sort({ createdAt: -1 });
 
-            sources:
-            retrievePolicyChunks({
-                query: "waiting period"
-            })
-
-        });
+        if (lastProfile) {
+            userProfile = lastProfile;
+        }
 
     }
 
-    if (
-        question.toLowerCase().includes("co-pay")
-    ) {
-
-        return res.json({
-
-            answer:
-            `For someone with ${userProfile.condition}
-in ${userProfile.city},
-co-pay means you may pay part of claim costs yourself.`,
-
-            sources:
-            retrievePolicyChunks({
-                query: "co-pay"
-            })
-
-        });
-
-    }
 
     if (
         question.toLowerCase().includes("surgery")
@@ -61,11 +48,106 @@ co-pay means you may pay part of claim costs yourself.`,
 
     }
 
-    return res.json({
-        answer:
-        "I could not find that information in uploaded policies."
-    });
+
+    try {
+
+        const chunks =
+            await retrievePolicyChunks({
+                query: question
+            });
+
+
+        const sources = [];
+
+        for (let i = 0; i < chunks.length; i++) {
+
+            if (
+                !sources.includes(
+                    chunks[i].policy
+                )
+            ) {
+
+                sources.push(
+                    chunks[i].policy
+                );
+
+            }
+
+        }
+
+
+        let retrievedContext =
+            "No matching clauses found.";
+
+        if (chunks.length > 0) {
+
+            retrievedContext = "";
+
+            for (let i = 0; i < chunks.length; i++) {
+
+                retrievedContext +=
+                    chunks[i].text + "\n";
+
+            }
+
+        }
+
+
+        const ai =
+            new GoogleGenAI({
+                apiKey:
+                    process.env.GEMINI_API_KEY
+            });
+
+
+        const prompt =
+`
+User profile:
+Condition: ${userProfile?.condition || "Unknown"}
+City: ${userProfile?.city || "Unknown"}
+
+Question:
+${question}
+
+Retrieved policy clauses:
+${retrievedContext}
+
+Answer ONLY using retrieved policy clauses.
+Define terms simply.
+Use a realistic example for this user.
+`;
+
+
+        const response =
+            await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: prompt
+            });
+
+
+        const answer =
+            response.text ||
+            "Explanation unavailable.";
+
+
+        res.json({
+            answer: answer,
+            sources: sources
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        res.json({
+            error: error.message
+        });
+
+    }
 
 });
+
 
 module.exports = router;

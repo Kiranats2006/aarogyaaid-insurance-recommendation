@@ -17,21 +17,26 @@ async function generatePolicyExplanation(
 
 
         const prompt =
-`
-Explain in 3-4 sentences why
-${bestPolicy.policyName}
-fits a user with:
+        `
+        Explain in 150-200 words why
+        ${bestPolicy.policyName}
+        fits a user with:
 
-Condition: ${userProfile.condition}
-City: ${userProfile.city}
+        Age: ${userProfile.age}
+        Lifestyle: ${userProfile.lifestyle}
+        Condition: ${userProfile.condition}
+        Income: ${userProfile.income}
+        City: ${userProfile.city}
 
-Mention:
-- waiting period
-- affordability
-- network suitability
+        Explicitly reference at least 3 profile factors.
 
-Be warm and simple.
-`;
+        Mention:
+        waiting period,
+        affordability,
+        network suitability.
+
+        Warm, empathetic tone.
+        `;
 
 
         const response =
