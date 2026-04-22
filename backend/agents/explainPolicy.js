@@ -50,10 +50,19 @@ Be warm and simple.
     } catch (error) {
 
         return `
-${bestPolicy.policyName}
-fits your profile because of favorable
-waiting period, affordability and network fit.
-`;
+        ${bestPolicy.policyName} is recommended for a
+        ${userProfile.age}-year-old user with
+        ${userProfile.condition}
+        because its ${bestPolicy.waitingPeriodMonths}-month
+        waiting period is favorable.
+
+        Its premium of Rs ${bestPolicy.premium}
+        fits the ${userProfile.income} income band.
+
+        It also supports hospitals in
+        ${userProfile.city},
+        making it a stronger fit than alternatives.
+        `;
 
     }
 

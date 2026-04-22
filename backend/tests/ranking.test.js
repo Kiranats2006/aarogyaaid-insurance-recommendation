@@ -14,8 +14,7 @@ const userProfile = {
 
 const rankedPolicies = rankPolicies(userProfile);
 
-assert.strictEqual(rankedPolicies[0].policyName, "Care Secure Plus"
-);
+assert.strictEqual(rankedPolicies[0].policyName, "Care Secure Plus");
 
 
 console.log("Test passed");
