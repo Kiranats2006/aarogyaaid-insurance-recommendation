@@ -1,0 +1,26 @@
+{
+    "policyName": "Shield Protect Gold",
+    "insurer": "Shield Health",
+    "premium": 24000,
+    "coverAmount": 1000000,
+    "waitingPeriodMonths": 24,
+    "keyBenefit": "Higher cover amount",
+    "inclusions": [
+        "Hospitalization",
+        "Cardiac procedures",
+        "Critical illness cover"
+    ],
+    "exclusions": [
+        "Asthma-related exclusions"
+    ],
+    "subLimits": "ICU sub-limit applies",
+    "copayPercent": 20,
+    "claimType": "Cashless",
+    "conditionsCovered": [
+        "Cardiac",
+        "Diabetes"
+    ],
+    "networkTierSupport": [
+        "Metro"
+    ]
+}

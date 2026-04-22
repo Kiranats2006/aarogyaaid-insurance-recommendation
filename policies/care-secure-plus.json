@@ -1,0 +1,27 @@
+{
+  "policyName": "Care Secure Plus",
+  "insurer": "Aarogya General",
+  "premium": 18000,
+  "coverAmount": 500000,
+  "waitingPeriodMonths": 12,
+  "keyBenefit": "Pre-existing diabetes support",
+  "inclusions": [
+    "Hospitalization",
+    "Day care procedures",
+    "Diabetes treatment after waiting period"
+  ],
+  "exclusions": [
+    "Cosmetic procedures"
+  ],
+  "subLimits": "Room rent capped at 2%",
+  "copayPercent": 10,
+  "claimType": "Cashless",
+  "conditionsCovered": [
+    "Diabetes",
+    "Hypertension"
+  ],
+  "networkTierSupport": [
+    "Metro",
+    "Tier-2"
+  ]
+}

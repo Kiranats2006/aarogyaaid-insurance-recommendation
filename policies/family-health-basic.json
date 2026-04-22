@@ -1,0 +1,23 @@
+{
+  "policyName": "Family Health Basic",
+  "insurer": "FamilyCare",
+  "premium": 12000,
+  "coverAmount": 300000,
+  "waitingPeriodMonths": 36,
+  "keyBenefit": "Affordable premium",
+  "inclusions": [
+    "Basic hospitalization"
+  ],
+  "exclusions": [
+    "Cardiac exclusions",
+    "Diabetes exclusions"
+  ],
+  "subLimits": "Room rent capped at 1%",
+  "copayPercent": 30,
+  "claimType": "Reimbursement",
+  "conditionsCovered": [],
+  "networkTierSupport": [
+    "Tier-2",
+    "Tier-3"
+  ]
+}
