@@ -2,12 +2,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const app = express();
+const cors = require("cors");
 
 const recommendRoute = require("./routes/recommend");
 const chatRoute = require("./routes/chat");
 const adminRoute = require("./routes/admin");
 
 app.use(express.json());
+app.use(cors());
+
 
 app.get("/", (req, res) => {
     res.send("Insurance Recommendation API Running");

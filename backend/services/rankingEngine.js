@@ -30,24 +30,48 @@ function loadPolicies() {
 
 function filterEligiblePolicies(userProfile) {
 
-    const policies = loadPolicies();
+    const policies =
+        loadPolicies();
 
     const eligible = [];
 
+
     for (let i = 0; i < policies.length; i++) {
 
-        let policy = policies[i];
+        let policy =
+            policies[i];
+
 
         if (
-            userProfile.condition === "Diabetes" &&
-            policy.conditionsCovered.includes("Diabetes")
+            userProfile.condition === "None"
         ) {
-            eligible.push(policy);
+
+            eligible.push(
+                policy
+            );
+
+        }
+
+
+        else if (
+
+            policy.conditionsCovered.includes(
+                userProfile.condition
+            )
+
+        ) {
+
+            eligible.push(
+                policy
+            );
+
         }
 
     }
 
+
     return eligible;
+
 }
 
 function rankPolicies(userProfile) {

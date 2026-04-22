@@ -1,6 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 
+import RecommendationView from "./RecommendationView";
+
+
 function ProfileForm() {
 
     const [formData, setFormData] = useState({
@@ -15,6 +18,9 @@ function ProfileForm() {
     const [recommendation, setRecommendation] =
         useState(null);
 
+    const [errorMessage, setErrorMessage] =
+        useState("");
+
 
     function handleChange(e) {
 
@@ -26,9 +32,12 @@ function ProfileForm() {
     }
 
 
+
     async function handleSubmit(e) {
 
         e.preventDefault();
+
+        setErrorMessage("");
 
         try {
 
@@ -38,8 +47,51 @@ function ProfileForm() {
                     formData
                 );
 
-            setRecommendation(
-                response.data
+
+            if (
+                response.data &&
+                response.data.peerComparison
+            ) {
+
+                setRecommendation(
+                    response.data
+                );
+
+                return;
+
+            }
+
+
+            if (
+                response.data &&
+                response.data.message
+            ) {
+
+                setErrorMessage(
+                    response.data.message
+                );
+
+                return;
+
+            }
+
+
+            if (
+                response.data &&
+                response.data.error
+            ) {
+
+                setErrorMessage(
+                    response.data.error
+                );
+
+                return;
+
+            }
+
+
+            setErrorMessage(
+                "Unexpected response received."
             );
 
         }
@@ -48,9 +100,14 @@ function ProfileForm() {
 
             console.error(error);
 
+            setErrorMessage(
+                "Could not load recommendation."
+            );
+
         }
 
     }
+
 
 
     return (
@@ -168,27 +225,18 @@ function ProfileForm() {
 
 
             {
-                recommendation && (
-
+                errorMessage && (
                     <div className="mt-6 p-4 border rounded">
-
-                        <h2 className="font-bold mb-3">
-                            Recommendation Loaded
-                        </h2>
-
-                        <p>
-                            Best Policy:
-                            {
-                                recommendation
-                                    .peerComparison[0]
-                                    .policyName
-                            }
-                        </p>
-
+                        {errorMessage}
                     </div>
-
                 )
             }
+
+
+
+            <RecommendationView
+                recommendation={recommendation}
+            />
 
         </div>
     );
